@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Ankur Logistics provides goods and parcel logistics solutions across India. Contact us for shipment enquiries and delivery estimates.">
+<title>Ankur Logistics | Delivering Trust Across India</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="topbar">
+  <div class="topbar-inner">
+    <span>☎ +91 9971247272&nbsp; | &nbsp;+91 7979894243</span>
+    <span>✉ ankurlogistics007@gmail.com</span>
+    <span>⌖ Uttam Nagar, New Delhi</span>
+    <span>GST: 07BTCPS9620L2Z5</span>
+  </div>
+</div>
+<header class="navbar">
+  <a class="brand" href="#home" aria-label="Ankur Logistics home">
+    <img src="assets/logo.png" alt="Ankur Logistics logo">
+    <span><strong>Ankur Logistics</strong><small>All India Goods &amp; Parcel Logistic</small></span>
+  </a>
+  <button class="menu-toggle" aria-label="Open navigation" onclick="document.querySelector('.navlinks').classList.toggle('open')">☰</button>
+  <nav class="navlinks">
+    <a class="active" href="#home">Home</a><a href="#services">Our Services⌄</a><a href="#tracking">Track Shipment</a><a href="#calculator">Calculator</a><a href="#about">About Us</a><a href="#gallery">Gallery</a>
+  </nav>
+  <a class="enquiry" href="https://wa.me/919971247272?text=Hello%20Ankur%20Logistics%2C%20I%20need%20a%20shipping%20enquiry." target="_blank" rel="noopener">◉ Enquiry Now</a>
+</header>
+
+<main>
+<section class="hero" id="home">
+  <div class="hero-copy">
+    <div class="eyebrow"><span></span> YOUR PAN-INDIA LOGISTICS PARTNER</div>
+    <h1>Delivering Trust<br><em>Across India.</em></h1>
+    <p class="hero-sub">Fast. Safe. Reliable.</p>
+    <p class="hero-desc">From parcels to business consignments, we help move your goods with care, commitment and dependable service.</p>
+    <div class="hero-actions"><a class="btn primary" href="#tracking">Track Your Shipment <b>→</b></a><a class="btn outline" href="#services">Explore Services</a></div>
+    <div class="hero-note"><span class="check">✓</span> Goods &amp; parcel logistics across India</div>
+  </div>
+  <div class="hero-visual">
+    <img src="assets/hero-truck.jpg" alt="Freight truck on a highway at sunset">
+    <div class="image-label"><span class="pulse"></span><div><strong>Moving business forward</strong><small>One delivery at a time</small></div></div>
+  </div>
+  <div class="hero-bottom"><div>🛡 <span><b>Secure Handling</b><small>Your goods matter</small></span></div><div>🚚 <span><b>Reliable Delivery</b><small>Service you can count on</small></span></div><div>📍 <span><b>Pan-India Reach</b><small>Connecting destinations</small></span></div><div>☎ <span><b>Customer Support</b><small>Here to help</small></span></div></div>
+</section>
+
+<section class="quick-panels wrap">
+  <article class="panel tracking-panel" id="tracking">
+    <div class="panel-heading"><div class="heading-icon">⌕</div><div><h2>Track Shipment</h2><p>Check the latest demo shipment status</p></div><span class="tag">DEMO</span></div>
+    <form id="trackForm" class="track-form"><label class="sr-only" for="trackingId">Tracking number</label><input id="trackingId" placeholder="Enter tracking number (e.g. AL123456)" autocomplete="off"><button class="btn primary" type="submit">Track Shipment →</button></form>
+    <div id="trackingResult" class="tracking-result"><div class="track-hint">Try demo IDs: <button type="button" class="text-button" data-track="AL123456">AL123456</button> · <button type="button" class="text-button" data-track="AL100200">AL100200</button> · <button type="button" class="text-button" data-track="AL555777">AL555777</button></div><p class="muted">Enter a demo tracking ID to see a sample status. This is not live shipment data.</p></div>
+  </article>
+  <article class="panel calculator-panel" id="calculator">
+    <div class="panel-heading"><div class="heading-icon">▦</div><div><h2>Freight Calculator</h2><p>Get an indicative shipping estimate</p></div></div>
+    <form id="calcForm" class="calc-grid">
+      <label>Pickup city<input id="pickup" value="Delhi" required></label>
+      <label>Delivery city<input id="delivery" value="Jaipur" required></label>
+      <label>Shipment type<select id="shipmentType"><option value="parcel">Parcel</option><option value="ptl">PTL</option><option value="ftl">FTL</option></select></label>
+      <label>Actual weight (kg)<input id="weight" type="number" min="1" value="10" required></label>
+      <label>Handling<select id="handling"><option value="standard">Standard handling</option><option value="special">Special handling (+₹775)</option></select></label>
+      <button class="btn primary calc-button" type="submit">Calculate Estimate</button>
+    </form>
+    <div class="estimate"><small>Estimated amount</small><strong id="estimateAmount">₹500</strong><span id="estimateNote">Parcel minimum charge</span><small class="disclaimer">Indicative demo estimate · confirm final rates with our team</small></div>
+  </article>
+</section>
+
+<section class="services section wrap" id="services">
+  <div class="section-intro"><span class="eyebrow">WHAT WE DO</span><h2>Logistics that keeps<br><em>your business moving.</em></h2><p>Practical shipping support for businesses and individuals, with a focus on care, communication and dependable service.</p></div>
+  <div class="service-grid">
+    <article class="service-card"><div class="service-symbol">▣</div><h3>Parcel Services</h3><p>For parcels and everyday shipping requirements, handled with care.</p><a href="#contact">Enquire now <b>→</b></a></article>
+    <article class="service-card featured"><div class="service-symbol">▤</div><h3>Part Truck Load (PTL)</h3><p>A practical option for consignments that don't need a full truck.</p><a href="#contact">Enquire now <b>→</b></a></article>
+    <article class="service-card"><div class="service-symbol">🚚</div><h3>Full Truck Load (FTL)</h3><p>Dedicated truck-load enquiries for larger goods movements.</p><a href="#contact">Enquire now <b>→</b></a></article>
+  </div>
+</section>
+
+<section class="about section" id="about"><div class="wrap about-grid">
+  <div class="about-photo"><img src="assets/logistics-01.jpeg" alt="Logistics transport and cargo operations"><div class="photo-caption"><strong>Moving goods with care.</strong><small>Committed to every consignment.</small></div></div>
+  <div class="about-copy"><span class="eyebrow">ABOUT ANKUR LOGISTICS</span><h2>A dependable partner<br>for every delivery.</h2><p>Ankur Logistics supports goods and parcel movement across India. We aim to make shipping straightforward through responsive service, careful handling and practical logistics options.</p><p>Whether you are sending parcels or arranging business consignments, our team is ready to discuss your requirement.</p><a class="btn primary" href="#contact">Talk to our team →</a><div class="mini-points"><span>✓ Customer-first approach</span><span>✓ Multiple shipment options</span><span>✓ Pan-India service enquiries</span></div></div>
+</div></section>
+
+<section class="gallery section wrap" id="gallery"><div class="section-title"><div><span class="eyebrow">BEHIND THE JOURNEY</span><h2>Our Gallery</h2></div><p>A glimpse into logistics, cargo and transport.</p></div><div class="gallery-grid">
+  <figure class="gallery-large"><img src="assets/logistics-02.jpeg" alt="Cargo and logistics warehouse"><figcaption>Goods in motion</figcaption></figure>
+  <figure><img src="assets/logistics-03.jpeg" alt="Logistics team and shipment handling"><figcaption>Careful handling</figcaption></figure>
+  <figure><img src="assets/logistics-04.jpeg" alt="Transport facility"><figcaption>Transport operations</figcaption></figure>
+</div></section>
+
+<section class="contact section" id="contact"><div class="wrap contact-card"><div><span class="eyebrow">LET'S MOVE YOUR GOODS</span><h2>Have a shipment to send?</h2><p>Share your pickup, delivery and shipment details. Our team will help you with the next step.</p></div><div class="contact-actions"><a class="btn white" href="https://wa.me/919971247272?text=Hello%20Ankur%20Logistics%2C%20I%20need%20a%20shipping%20quote." target="_blank" rel="noopener">WhatsApp Enquiry →</a><a class="contact-phone" href="tel:+919971247272">☎ +91 9971247272</a></div></div></section>
+</main>
+
+<footer><div class="wrap footer-main"><a class="brand footer-brand" href="#home"><img src="assets/logo.png" alt=""><span><strong>Ankur Logistics</strong><small>All India Goods &amp; Parcel Logistic</small></span></a><p>Delivering trust across India.</p><div class="footer-links"><a href="#services">Services</a><a href="#tracking">Track shipment</a><a href="#calculator">Calculator</a><a href="#contact">Contact</a></div></div><div class="footer-bottom">© <span id="year"></span> Ankur Logistics. All rights reserved. <span>WZ-3 Om Vihar Phase 1, Uttam Nagar, New Delhi – 110059</span></div></footer>
+<script src="script.js"></script>
+</body>
+</html>

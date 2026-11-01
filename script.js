@@ -1,68 +1,112 @@
 
-const demoShipments = {
-  "AL123456": {
-    status: "Transit",
-    pickup: "Delhi",
-    delivery: "Jaipur",
-    step: 2,
-    events: ["Shipment", "Pickup", "Transit", "Delivered"]
-  },
-  "AL100200": {
-    status: "Shipment",
-    pickup: "Mumbai",
-    delivery: "Delhi",
-    step: 0,
-    events: ["Shipment", "Pickup", "Transit", "Delivered"]
-  },
-  "AL555777": {
-    status: "Delivered",
-    pickup: "Pune",
-    delivery: "Lucknow",
-    step: 3,
-    events: ["Shipment", "Pickup", "Transit", "Delivered"]
-  }
-};
+const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
+const SUPABASE_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY";
 
 const trackForm = document.getElementById("trackForm");
 const trackInput = document.getElementById("trackingId");
 const result = document.getElementById("trackingResult");
 
-function track(id) {
+async function track(id) {
   const key = (id || "").trim().toUpperCase();
-  const s = demoShipments[key];
 
-  if (!s) {
-    result.innerHTML =
-      '<p class="muted">Tracking ID not found. Please check your ID.</p>';
+  if (!key) {
+    result.textContent = "Please enter your tracking number.";
     return;
   }
 
-  result.innerHTML = `
-    <div class="status-line">
-      <strong>Tracking ID: ${key}</strong>
-      <span class="status-pill">${s.status}</span>
-    </div>
-    <div class="status-route">
-      ${s.pickup} <span style="color:#075be8">→</span> ${s.delivery}
-    </div>
-    <div class="timeline">
-      ${s.events.map((e, i) =>
-        `<span class="${i <= s.step ? "done" : ""}">${e}</span>`
-      ).join("")}
-    </div>
-    <p class="muted">Demo tracking only. Actual shipment status is not connected.</p>
-  `;
+  result.textContent = "Searching shipment...";
+
+  try {
+    const response = await fetch(
+      `${SUPABASE_URL}/rest/v1/rpc/track_shipment`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`
+        },
+        body: JSON.stringify({ p_tracking_number: key })
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Tracking service is not available.");
+    }
+
+    const rows = await response.json();
+    const s = rows[0];
+
+    if (!s) {
+      result.textContent =
+        "Tracking ID not found. Please check your tracking number.";
+      return;
+    }
+
+    const status = s.status;
+    const stages = ["Shipment", "Pickup", "Transit", "Delivered"];
+
+    let step = 0;
+    if (status === "Picked Up") step = 1;
+    if (status === "In Transit" || status === "Out for Delivery") step = 2;
+    if (status === "Delivered") step = 3;
+
+    result.replaceChildren();
+
+    const line = document.createElement("div");
+    line.className = "status-line";
+
+    const tracking = document.createElement("strong");
+    tracking.textContent = `Tracking ID: ${s.tracking_number}`;
+
+    const pill = document.createElement("span");
+    pill.className = "status-pill";
+    pill.textContent = status;
+
+    line.append(tracking, pill);
+
+    const route = document.createElement("div");
+    route.className = "status-route";
+    route.textContent = `${s.sender_city || "—"} → ${s.receiver_city || "—"}`;
+
+    const timeline = document.createElement("div");
+    timeline.className = "timeline";
+
+    stages.forEach((stage, index) => {
+      const item = document.createElement("span");
+      item.textContent = stage;
+
+      if (index <= step && status !== "Cancelled") {
+        item.className = "done";
+      }
+
+      timeline.appendChild(item);
+    });
+
+    result.append(line, route, timeline);
+
+    if (status === "Cancelled") {
+      const note = document.createElement("p");
+      note.className = "muted";
+      note.textContent = "This shipment has been cancelled.";
+      result.appendChild(note);
+    }
+  } catch (error) {
+    result.textContent =
+      "Unable to track shipment right now. Please try again later.";
+    console.error(error);
+  }
 }
 
-trackForm.addEventListener("submit", e => {
-  e.preventDefault();
+trackForm.addEventListener("submit", event => {
+  event.preventDefault();
   track(trackInput.value);
 });
 
-document.querySelectorAll("[data-track]").forEach(b => {
-  b.addEventListener("click", () => {
-    trackInput.value = b.dataset.track;
-    track(b.dataset.track);
+document.querySelectorAll("[data-track]").forEach(button => {
+  button.addEventListener("click", () => {
+    trackInput.value = button.dataset.track;
+    track(button.dataset.track);
   });
 });
 
@@ -79,6 +123,9 @@ function calculate() {
   );
   const handling = document.getElementById("handling").value;
   const r = rates[type];
+
+  if (!r) return;
+
   const base = Math.max(r.min, weight * r.rate);
   const total = base + (handling === "special" ? 775 : 0);
 
@@ -95,8 +142,8 @@ function calculate() {
       : r.label;
 }
 
-document.getElementById("calcForm").addEventListener("submit", e => {
-  e.preventDefault();
+document.getElementById("calcForm").addEventListener("submit", event => {
+  event.preventDefault();
   calculate();
 });
 

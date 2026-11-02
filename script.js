@@ -1,6 +1,6 @@
 
 const SUPABASE_URL = "https://skqtmrjfpaldtrpywlgv.supabase.co";
-const SUPABASE_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY";
+const SUPABASE_KEY = "sb_publishable_j4qMLbn40hK3wtswubwVDw_Ntk2oC51";
 
 const trackForm = document.getElementById("trackForm");
 const trackInput = document.getElementById("trackingId");

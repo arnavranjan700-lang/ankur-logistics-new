@@ -30,9 +30,13 @@ async function track(id) {
       }
     );
 
-    if (!response.ok) {
-      throw new Error("Tracking service is not available.");
-    }
+if (!response.ok) {
+  const errorDetails = await response.text();
+  console.error("Supabase HTTP status:", response.status);
+  console.error("Supabase error details:", errorDetails);
+  result.textContent = `Tracking error (${response.status}). Check console.`;
+  return;
+}
 
     const rows = await response.json();
     const s = rows[0];

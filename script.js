@@ -1,5 +1,5 @@
 
-const SUPABASE_URL = "https://skqtmrjfpaldtrpywlgvsupabase.co";
+const SUPABASE_URL = "https://skqtmrjfpaldtrpywlgv.supabase.co";
 const SUPABASE_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY";
 
 const trackForm = document.getElementById("trackForm");

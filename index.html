@@ -6,6 +6,18 @@
 <meta name="description" content="Ankur Logistics provides goods and parcel logistics solutions across India. Contact us for shipment enquiries and delivery estimates.">
 <title>Ankur Logistics | Delivering Trust Across India</title>
 <link rel="stylesheet" href="styles.css">
+
+<style>
+.shipment-summary .summary-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:22px}
+.shipment-summary .summary-card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:22px;box-shadow:0 8px 24px #0f172a0a;display:flex;flex-direction:column;gap:8px}
+.shipment-summary .summary-label{color:#52627a;font-size:14px}
+.shipment-summary .summary-card strong{font-size:34px;line-height:1.1;color:#123b70}
+.shipment-summary .summary-card small,.shipment-summary .summary-updated{color:#64748b;font-size:13px}
+.shipment-summary .summary-updated{margin-top:14px}
+@media(max-width:760px){.shipment-summary .summary-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.shipment-summary .summary-card{padding:16px}}
+@media(max-width:380px){.shipment-summary .summary-grid{grid-template-columns:1fr}}
+</style>
+
 </head>
 <body>
 <div class="topbar">
@@ -43,6 +55,21 @@
     <div class="image-label"><span class="pulse"></span><div><strong>Moving business forward</strong><small>One delivery at a time</small></div></div>
   </div>
   <div class="hero-bottom"><div>🛡 <span><b>Secure Handling</b><small>Your goods matter</small></span></div><div>🚚 <span><b>Reliable Delivery</b><small>Service you can count on</small></span></div><div>📍 <span><b>Pan-India Reach</b><small>Connecting destinations</small></span></div><div>☎ <span><b>Customer Support</b><small>Here to help</small></span></div></div>
+</section>
+
+
+<section class="shipment-summary section wrap" id="shipment-summary" aria-labelledby="shipment-summary-title">
+  <div class="section-title">
+    <div><span class="eyebrow">SHIPMENT SNAPSHOT</span><h2 id="shipment-summary-title">Our Delivery Overview</h2></div>
+    <p>Live summary of shipments handled by Ankur Logistics.</p>
+  </div>
+  <div class="summary-grid">
+    <article class="summary-card"><span class="summary-label">Total Parcels</span><strong id="public-total">—</strong><small>All recorded shipments</small></article>
+    <article class="summary-card"><span class="summary-label">In Transit</span><strong id="public-transit">—</strong><small>On the way</small></article>
+    <article class="summary-card"><span class="summary-label">Delivered</span><strong id="public-delivered">—</strong><small>Successfully delivered</small></article>
+    <article class="summary-card"><span class="summary-label">Waiting / Pending</span><strong id="public-waiting">—</strong><small>Booked or picked up</small></article>
+  </div>
+  <p class="summary-updated" id="summary-updated" role="status">Loading shipment summary…</p>
 </section>
 
 <section class="quick-panels wrap">
@@ -90,5 +117,41 @@
 
 <footer><div class="wrap footer-main"><a class="brand footer-brand" href="#home"><img src="assets/logo.png" alt=""><span><strong>Ankur Logistics</strong><small>All India Goods &amp; Parcel Logistic</small></span></a><p>Delivering trust across India.</p><div class="footer-links"><a href="#services">Services</a><a href="#tracking">Track shipment</a><a href="#calculator">Calculator</a><a href="#contact">Contact</a></div></div><div class="footer-bottom">© <span id="year"></span> Ankur Logistics. All rights reserved. <span>WZ-3 Om Vihar Phase 1, Uttam Nagar, New Delhi – 110059</span></div></footer>
 <script src="script.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(() => {
+  const client = window.supabase.createClient(
+    "https://skqtmrjfpaldtrpywlgv.supabase.co",
+    "sb_publishable_j4qMLbn40hK3wtswubwVDw_Ntk2oC51"
+  );
+  const setText = (id, value) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = Number(value ?? 0).toLocaleString("en-IN");
+  };
+  async function loadShipmentSummary() {
+    const status = document.getElementById("summary-updated");
+    try {
+      const { data, error } = await client.rpc("public_shipment_summary");
+      if (error) throw error;
+      const summary = Array.isArray(data) ? data[0] : data;
+      if (!summary) throw new Error("No summary returned");
+      setText("public-total", summary.total);
+      setText("public-transit", summary.transit);
+      setText("public-delivered", summary.delivered);
+      setText("public-waiting", summary.waiting);
+      status.textContent = "Updated " + new Date().toLocaleString();
+    } catch (error) {
+      ["public-total","public-transit","public-delivered","public-waiting"].forEach(id => {
+        document.getElementById(id).textContent = "—";
+      });
+      status.textContent = "Shipment summary is temporarily unavailable.";
+      console.error("Public shipment summary failed:", error);
+    }
+  }
+  loadShipmentSummary();
+})();
+</script>
+
 </body>
 </html>

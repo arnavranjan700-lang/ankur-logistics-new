@@ -40,6 +40,19 @@
     #dashboard { display: none; }
     #message { white-space: pre-wrap; overflow-wrap: anywhere; }
     .hint { color: #64748b; font-size: 14px; }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+    }
+    .stat-card {
+      background: #f8fafc; border: 1px solid #e2e8f0;
+      border-radius: 10px; padding: 16px;
+    }
+    .stat-card .stat-label { color: #64748b; font-size: 14px; }
+    .stat-card .stat-number { color: #123b70; font-size: 28px; font-weight: 700; margin-top: 8px; }
+    .stat-card .stat-help { color: #64748b; font-size: 12px; margin-top: 5px; }
+    .section-row { display: flex; gap: 12px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
   </style>
 </head>
 <body>
@@ -61,6 +74,22 @@
   </section>
 
   <div id="dashboard">
+    <section>
+      <div class="section-row">
+        <h2>Parcel Stock & Delivery Overview</h2>
+        <button type="button" id="refreshStats" class="secondary">Refresh Counts</button>
+      </div>
+      <p class="hint">Counts are calculated from shipment records in your database.</p>
+      <div class="stats-grid" aria-live="polite">
+        <div class="stat-card"><div class="stat-label">Total Parcels / Shipments</div><div class="stat-number" id="countTotal">—</div><div class="stat-help">All recorded shipments</div></div>
+        <div class="stat-card"><div class="stat-label">Warehouse Stock</div><div class="stat-number" id="countStock">—</div><div class="stat-help">Status: Received in Warehouse</div></div>
+        <div class="stat-card"><div class="stat-label">Waiting / Pending</div><div class="stat-number" id="countWaiting">—</div><div class="stat-help">Booked or Picked Up</div></div>
+        <div class="stat-card"><div class="stat-label">In Transit</div><div class="stat-number" id="countTransit">—</div><div class="stat-help">Status: In Transit</div></div>
+        <div class="stat-card"><div class="stat-label">Delivered</div><div class="stat-number" id="countDelivered">—</div><div class="stat-help">Successfully delivered</div></div>
+      </div>
+      <p class="hint" id="statsUpdated">Counts will load after admin verification.</p>
+    </section>
+
     <section>
       <h2>Add New Shipment</h2>
       <form id="addForm">
@@ -99,7 +128,10 @@
             <label>Initial Status</label>
             <select id="newStatus">
               <option>Booked</option>
+              <option>Received in Warehouse</option>
+              <option>Waiting</option>
               <option>Picked Up</option>
+              <option>Dispatched</option>
               <option>In Transit</option>
               <option>Out for Delivery</option>
               <option>Delivered</option>
@@ -119,7 +151,10 @@
         <label>New Status</label>
         <select id="status">
           <option>Booked</option>
+          <option>Received in Warehouse</option>
+          <option>Waiting</option>
           <option>Picked Up</option>
+          <option>Dispatched</option>
           <option>In Transit</option>
           <option>Out for Delivery</option>
           <option>Delivered</option>
@@ -158,6 +193,28 @@
     $("message").textContent = text;
   }
 
+  async function refreshStats() {
+    if (!adminReady) return;
+    $("statsUpdated").textContent = "Loading parcel counts...";
+    const { data, error } = await db
+      .from("shipments")
+      .select("status");
+
+    if (error) {
+      $("statsUpdated").textContent = "Could not load counts: " + error.message;
+      return;
+    }
+
+    const statuses = (data || []).map(row => String(row.status || "").trim().toLowerCase());
+    const count = predicate => statuses.filter(predicate).length;
+    $("countTotal").textContent = statuses.length;
+    $("countStock").textContent = count(status => status === "received in warehouse");
+    $("countWaiting").textContent = count(status => ["booked", "waiting", "picked up"].includes(status));
+    $("countTransit").textContent = count(status => ["in transit", "dispatched", "out for delivery"].includes(status));
+    $("countDelivered").textContent = count(status => status === "delivered");
+    $("statsUpdated").textContent = "Last refreshed: " + new Date().toLocaleString();
+  }
+
   async function verifyAdmin() {
     const { data: { session }, error } = await db.auth.getSession();
     if (error || !session) {
@@ -183,6 +240,7 @@
     $("login").style.display = "none";
     $("dashboard").style.display = "block";
     message("Admin verified. You can manage shipments.");
+    await refreshStats();
     return true;
   }
 
@@ -249,6 +307,7 @@
       message("Shipment added successfully!\nTracking number: " +
         data.tracking_number + "\nStatus: " + data.status);
       $("addForm").reset();
+      await refreshStats();
     } catch (err) {
       message("Shipment was created, but event history failed: " +
         err.message + "\nPlease check the shipment before retrying.");
@@ -299,11 +358,14 @@
       message("Status updated successfully!\nTracking number: " +
         shipment.tracking_number + "\nNew status: " + newStatus);
       $("updateForm").reset();
+      await refreshStats();
     } catch (err) {
       message("Status updated, but event history failed: " +
         err.message + "\nPlease check the shipment history.");
     }
   });
+
+  $("refreshStats").addEventListener("click", refreshStats);
 
   $("logout").addEventListener("click", async () => {
     await db.auth.signOut();

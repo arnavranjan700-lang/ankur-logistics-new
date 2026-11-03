@@ -233,34 +233,29 @@
     $("message").textContent = text;
   }
 
+  async function refreshStats() {
+    if (!adminReady) return;
+    $("statsUpdated").textContent = "Checking dashboard access...";
 
-async function refreshStats() {
-  if (!adminReady) return;
+    // Verify the database is reachable, but keep these dashboard figures display-only.
+    const { error } = await db
+      .from("shipments")
+      .select("id", { count: "exact", head: true });
 
-  $("statsUpdated").textContent = "Loading parcel counts...";
+    if (error) {
+      $("statsUpdated").textContent = "Could not verify dashboard data: " + error.message;
+      return;
+    }
 
-  const { error } = await db
-    .from("shipments")
-    .select("status")
-    .limit(1);
-
-  if (error) {
-    $("statsUpdated").textContent =
-      "Could not load counts: " + error.message;
-    return;
+    $("countTotal").textContent = "2,500";
+    $("countStock").textContent = "0";
+    $("countWaiting").textContent = "54";
+    $("countTransit").textContent = "37";
+    $("countDelivered").textContent = "2,463";
+    $("statsUpdated").textContent = "Display figures only • Last refreshed: " + new Date().toLocaleString();
   }
 
-  $("countTotal").textContent = "2,500";
-  $("countStock").textContent = "0";
-  $("countWaiting").textContent = "54";
-  $("countTransit").textContent = "37";
-  $("countDelivered").textContent = "2,463";
-
-  $("statsUpdated").textContent =
-    "Display figures • Last refreshed: " +
-    new Date().toLocaleString();
-}
- {
+  async function verifyAdmin() {
     const { data: { session }, error } = await db.auth.getSession();
     if (error || !session) {
       adminReady = false;
